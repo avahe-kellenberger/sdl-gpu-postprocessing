@@ -52,9 +52,12 @@ when isMainModule:
     blit(hexagonImage, nil, target, 100, 100)
     blit(hexagonImage, nil, target, 100, 400)
 
+    let screenCopy = copyImageFromTarget(target)
+    setShaderImage(screenCopy, 3, 0)
+
     # Post-processing shader
     shader.render(currTimeSeconds)
-    target.rectangleFilled(0, 0, 800, 600, BLUE)
+    # target.rectangleFilled(0, 0, 800, 600, BLUE)
 
     # Present the render data on the window
     flip(target)

@@ -1,9 +1,10 @@
-#version 140
+#version 330
+#extension GL_ARB_explicit_uniform_location : require
 
 // TODO: Why is this the hexagon image?
 uniform sampler2D tex;
 
-uniform sampler2D screen_texture;
+layout(location = 3) uniform sampler2D screen_texture;
 
 varying vec2 vertex;
 varying vec4 color;
