@@ -33,7 +33,8 @@ when isMainModule:
     refreshRate = displayMode.refreshRate
 
   # Create shader program
-  let hexagonShader = newShader("./assets/common.vert", "./assets/hexagons.frag")
+  let shader = newShader("./assets/common.vert", "./assets/shockwave.frag")
+  let hexagonImage = loadImage("./assets/hexagon.png")
 
   # Loop until exit
   var
@@ -46,8 +47,13 @@ when isMainModule:
     # Render
     target.clearColor(CLEAR_COLOR)
     
+    # Render some images
+    blit(hexagonImage, nil, target, 20, 20)
+    blit(hexagonImage, nil, target, 100, 100)
+    blit(hexagonImage, nil, target, 100, 400)
+
     # Post-processing shader
-    hexagonShader.render(currTimeSeconds)
+    shader.render(currTimeSeconds)
     target.rectangleFilled(0, 0, 800, 600, BLUE)
 
     # Present the render data on the window
@@ -66,4 +72,5 @@ when isMainModule:
   # Teardown
   sdl_gpu.quit()
   logInfo(LogCategoryApplication, "SDL shutdown completed")
+  freeImage(hexagonImage)
 
