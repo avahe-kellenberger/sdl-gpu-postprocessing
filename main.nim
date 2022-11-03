@@ -20,20 +20,25 @@ when isMainModule:
   shaderModule.resolution[0] = WINDOW_WIDTH
   shaderModule.resolution[1] = WINDOW_HEIGHT
 
-  let target = init(uint16 WINDOW_WIDTH, uint16 WINDOW_HEIGHT, uint32 WINDOW_ALLOW_HIGHDPI and int(INIT_ENABLE_VSYNC))
-  if target == nil:
+  let screen = init(
+    uint16 WINDOW_WIDTH,
+    uint16 WINDOW_HEIGHT,
+    uint32 WINDOW_ALLOW_HIGHDPI and int(INIT_ENABLE_VSYNC)
+  )
+
+  if screen == nil:
     raise newException(Exception, "Failed to init SDL!")
 
   var refreshRate = 60
-  if target.context != nil:
-    let window = getWindowFromId(target.context.windowID)
+  if screen.context != nil:
+    let window = getWindowFromId(screen.context.windowID)
     window.setWindowTitle("Post-processing shader testing")
     var displayMode: DisplayMode
     discard window.getWindowDisplayMode(displayMode.addr)
     refreshRate = displayMode.refreshRate
 
   # Create shader program
-  let shader = newShader("./assets/common.vert", "./assets/shockwave.frag")
+  let shader = newShader("./assets/common.vert", "./assets/postprocess.frag")
   let hexagonImage = loadImage("./assets/hexagon.png")
 
   # Loop until exit
@@ -43,24 +48,25 @@ when isMainModule:
     deltaTime: float = 0
     event: Event
 
+  let
+    image = createImage(screen.w, screen.h, FORMAT_RGBA)
+    renderTarget = loadTarget(image)
+
   while not shouldExit:
     # Render
-    target.clearColor(CLEAR_COLOR)
+    screen.clearColor(CLEAR_COLOR)
+    renderTarget.clearColor(CLEAR_COLOR)
     
     # Render some images
-    blit(hexagonImage, nil, target, 20, 20)
-    blit(hexagonImage, nil, target, 100, 100)
-    blit(hexagonImage, nil, target, 100, 400)
-
-    let screenCopy = copyImageFromTarget(target)
-    setShaderImage(screenCopy, 3, 0)
+    hexagonImage.blit(nil, renderTarget, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.5)
 
     # Post-processing shader
     shader.render(currTimeSeconds)
-    # target.rectangleFilled(0, 0, 800, 600, BLUE)
+
+    renderTarget.image.blit(nil, screen, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.5)
 
     # Present the render data on the window
-    flip(target)
+    flip(screen)
 
     let time = getMonoTime().ticks
     let elapsedNanos = time - previousTimeNanos
