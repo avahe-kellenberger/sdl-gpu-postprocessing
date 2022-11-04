@@ -56,15 +56,25 @@ when isMainModule:
     # Render
     screen.clearColor(CLEAR_COLOR)
     renderTarget.clearColor(CLEAR_COLOR)
-    
+
     # Render some images
-    hexagonImage.blit(nil, renderTarget, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.5)
+    hexagonImage.blit(nil, renderTarget, 300, 200)
+    hexagonImage.blit(nil, renderTarget, 400, 200)
+    hexagonImage.blit(nil, renderTarget, 500, 200)
+
+    hexagonImage.blit(nil, renderTarget, 300, 300)
+    hexagonImage.blit(nil, renderTarget, 400, 300)
+    hexagonImage.blit(nil, renderTarget, 500, 300)
+
+    hexagonImage.blit(nil, renderTarget, 300, 400)
+    hexagonImage.blit(nil, renderTarget, 400, 400)
+    hexagonImage.blit(nil, renderTarget, 500, 400)
 
     # Post-processing shader
     shader.render(currTimeSeconds)
 
+    # Render the contents onto the "screen"
     renderTarget.image.blit(nil, screen, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.5)
-
     # Present the render data on the window
     flip(screen)
 
@@ -79,6 +89,8 @@ when isMainModule:
         shouldExit = true
 
   # Teardown
+  freeTarget(renderTarget)
+  freeImage(image)
   sdl_gpu.quit()
   logInfo(LogCategoryApplication, "SDL shutdown completed")
   freeImage(hexagonImage)
